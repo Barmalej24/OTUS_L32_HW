@@ -1,37 +1,38 @@
 ﻿using System.IO;
+using System.Text;
 
 namespace OTUS_L32_HW
 {
     public class FileOperation
     {
-        public static void CreateAllFile(string path, List<string> subpath, int count)
+        public static async Task CreateAllFile(string path, List<string> subPath, int count, CancellationToken token)
         {
-            foreach (var subpathItem in subpath)
+            foreach (var subpathItem in subPath)
             {
                 for (int i = 1; i <= count; i++)
                 {
                     CreateFile($@"{path}\{subpathItem}\File{i}");
-                    WriteNameFile($@"{path}\{subpathItem}\File{i}", $"File{i}\n");
+                    await WriteNameFile($@"{path}\{subpathItem}\File{i}", $"File{i}\n", token);
                 }
             }
             Console.WriteLine("Файлы созданы...");
         }
         private static void CreateFile(string path)
         {
-            FileInfo fileInfo = new FileInfo(path);
+            var fileInfo = new FileInfo(path);
             if (!fileInfo.Exists)
             {
-                File.Create(path);
+                fileInfo.Create().Dispose();
                 Console.WriteLine(path);
             }
         }
 
-        private async static void WriteNameFile(string path, string nameFile)
+        private static async Task WriteNameFile(string path, string nameFile, CancellationToken token)
         {
-            await File.WriteAllTextAsync(path, nameFile);
+            await File.AppendAllTextAsync(path, nameFile, Encoding.UTF8, token);
         }
 
-        public static void WriteDateAllFile(string path)
+        public static async Task WriteDateAllFile(string path, CancellationToken token)
         {
             var directory = new DirectoryInfo(path);
 
@@ -43,20 +44,20 @@ namespace OTUS_L32_HW
                     var files = dir.GetFiles();
                     foreach (var file in files)
                     {
-                        WriteDateFile(file.FullName);
+                       await WriteDateFile(file.FullName, token);
                     }
                 }
             }
             Console.WriteLine("В файлы добавлена дата...");
         }
 
-        private async static void WriteDateFile(string path)
+        private static async Task WriteDateFile(string path, CancellationToken token)
         {
             var date = DateTime.Now.ToString();
-            await File.AppendAllTextAsync(path, date);
+            await File.AppendAllTextAsync(path, date, Encoding.UTF8, token);
         }
 
-        public static void ReadAllFile(string path)
+        public static async Task ReadAllFile(string path, CancellationToken token)
         {
             var directory = new DirectoryInfo(path);
 
@@ -68,16 +69,16 @@ namespace OTUS_L32_HW
                     var files = dir.GetFiles();
                     foreach (var file in files)
                     {
-                        ReadFile(file.FullName);
+                       await ReadFile(file.FullName, token);
                     }
                 }
             }
         }
 
-        private async static void ReadFile(string path)
+        private static async Task ReadFile(string path, CancellationToken token)
         {
             var fileName = new FileInfo(path).Name;
-            var fileText = await File.ReadAllTextAsync(path);
+            var fileText = await File.ReadAllTextAsync(path, token);
             Console.WriteLine($"{fileName} :: {fileText}");
         }
     }
