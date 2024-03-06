@@ -5,14 +5,14 @@ namespace OTUS_L32_HW
 {
     public class FileOperation
     {
-        public static async Task CreateAllFile(string path, List<string> subPath, int count, CancellationToken token)
+        public static async Task CreateAllFile(string path, List<string> subPath, int count)
         {
             foreach (var subpathItem in subPath)
             {
                 for (int i = 1; i <= count; i++)
                 {
                     CreateFile($@"{path}\{subpathItem}\File{i}");
-                    await WriteNameFile($@"{path}\{subpathItem}\File{i}", $"File{i}\n", token);
+                    await WriteNameFile($@"{path}\{subpathItem}\File{i}", $"File{i}\n");
                 }
             }
             Console.WriteLine("Файлы созданы...");
@@ -27,12 +27,13 @@ namespace OTUS_L32_HW
             }
         }
 
-        private static async Task WriteNameFile(string path, string nameFile, CancellationToken token)
+        private static async Task WriteNameFile(string path, string nameFile)
         {
-            await File.AppendAllTextAsync(path, nameFile, Encoding.UTF8, token);
+            using var wr = new StreamWriter(path, true, Encoding.UTF8);
+            wr.WriteLine(nameFile);
         }
 
-        public static async Task WriteDateAllFile(string path, CancellationToken token)
+        public static async Task WriteDateAllFile(string path)
         {
             var directory = new DirectoryInfo(path);
 
@@ -44,17 +45,18 @@ namespace OTUS_L32_HW
                     var files = dir.GetFiles();
                     foreach (var file in files)
                     {
-                       await WriteDateFile(file.FullName, token);
+                       await WriteDateFile(file.FullName);
                     }
                 }
             }
             Console.WriteLine("В файлы добавлена дата...");
         }
 
-        private static async Task WriteDateFile(string path, CancellationToken token)
+        private static async Task WriteDateFile(string path)
         {
             var date = DateTime.Now.ToString();
-            await File.AppendAllTextAsync(path, date, Encoding.UTF8, token);
+            using var wr = new StreamWriter(path, true, Encoding.UTF8);
+            wr.WriteLine(date, Encoding.UTF8);
         }
 
         public static async Task ReadAllFile(string path, CancellationToken token)

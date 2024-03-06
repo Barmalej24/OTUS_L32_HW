@@ -11,8 +11,8 @@
             try
             {
                 DirectoryOperation.CreateAllDir(path, listSubpath);
-                FileOperation.CreateAllFile(path, listSubpath, 10, cts.Token).Wait();
-                FileOperation.WriteDateAllFile(path, cts.Token).Wait();
+                FileOperation.CreateAllFile(path, listSubpath, 10).Wait();
+                FileOperation.WriteDateAllFile(path).Wait();
                 FileOperation.ReadAllFile(path, cts.Token).Wait();
             }
             catch (Exception e)
