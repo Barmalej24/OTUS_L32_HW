@@ -29,8 +29,8 @@ namespace OTUS_L32_HW
 
         private static async Task WriteNameFile(string path, string nameFile)
         {
-            using var wr = new StreamWriter(path, true, Encoding.UTF8);
-            wr.WriteLine(nameFile);
+            await using var wr = new StreamWriter(path, true, Encoding.UTF8);
+            await wr.WriteLineAsync(nameFile);
         }
 
         public static async Task WriteDateAllFile(string path)
@@ -55,8 +55,8 @@ namespace OTUS_L32_HW
         private static async Task WriteDateFile(string path)
         {
             var date = DateTime.Now.ToString();
-            using var wr = new StreamWriter(path, true, Encoding.UTF8);
-            wr.WriteLine(date, Encoding.UTF8);
+            await using var wr = new StreamWriter(path, true, Encoding.UTF8);
+            await wr.WriteLineAsync(date);
         }
 
         public static async Task ReadAllFile(string path, CancellationToken token)
